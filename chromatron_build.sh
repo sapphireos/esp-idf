@@ -10,4 +10,4 @@ pushd examples/build_system/cmake/idf_as_lib
 popd
 
 cp -r examples/build_system/cmake/idf_as_lib ../esp32/esp-idf
-cp -r components ../esp32/components
+cp -r components ../esp32/esp-idf
