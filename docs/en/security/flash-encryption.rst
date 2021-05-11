@@ -172,6 +172,17 @@ After the fourth time encryption is enabled, :ref:`FLASH_CRYPT_CNT` has the maxi
 
 Using :ref:`updating-encrypted-flash-ota` or :ref:`pregenerated-flash-encryption-key` allows you to exceed this limit.
 
+. _flash-encrypt-best-practices:
+
+Best Practices
+^^^^^^^^^^^^^^
+
+When using Flash Encryption in production:
+
+- Do not reuse the same flash encryption key between multiple devices. This means that an attacker who copies encrypted data from one device cannot transfer it to a second device.
+- When using ESP32 V3, if the UART ROM Download Mode is not needed for a production device then it should be disabled to provide an extra level of protection. Do this by calling :cpp:func:`esp_efuse_disable_rom_download_mode` during application startup. Alternatively, configure the project :ref:`CONFIG_ESP32_REV_MIN` level to 3 (targeting ESP32 V3 only) and enable :ref:`CONFIG_SECURE_DISABLE_ROM_DL_MODE`. The ability to disable ROM Download Mode is not available on earlier ESP32 versions.
+- Enable :doc:`Secure Boot <secure-boot>` as an extra layer of protection, and to prevent an attacker from selectively corrupting any part of the flash before boot.
+
 Cautions With Serial Flashing
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -281,16 +292,12 @@ Reset the ESP32 and flash encryption should be disabled, the bootloader will boo
 Limitations of Flash Encryption
 -------------------------------
 
-Flash Encryption prevents plaintext readout of the encrypted flash, to protect firmware against unauthorised readout and modification. It is important to understand the limitations of the flash encryption system:
+Flash encryption protects firmware against unauthorised readout and modification. It is important to understand the limitations of the flash encryption feature:
 
-- Flash encryption is only as strong as the key. For this reason, we recommend keys are generated on the device during first boot (default behavior). If generating keys off-device (see :ref:`pregenerated-flash-encryption-key`), ensure proper procedure is followed.
-
+- Flash encryption is only as strong as the key. For this reason, we recommend keys are generated on the device during first boot (default behaviour). If generating keys off-device, ensure proper procedure is followed and don't share the same key between all production devices.
 - Not all data is stored encrypted. If storing data on flash, check if the method you are using (library, API, etc.) supports flash encryption.
-
-- Flash encryption does not prevent an attacker from understanding the high-level layout of the flash. This is because the same AES key is used for every pair of adjacent 16 byte AES blocks. When these adjacent 16 byte blocks contain identical content (such as empty or padding areas), these blocks will encrypt to produce matching pairs of encrypted blocks. This may allow an attacker to make high-level comparisons between encrypted devices (ie to tell if two devices are probably running the same firmware version).
-
-- For the same reason, an attacker can always tell when a pair of adjacent 16 byte blocks (32 byte aligned) contain identical content. Keep this in mind if storing sensitive data on the flash, design your flash storage so this doesn't happen (using a counter byte or some other non-identical value every 16 bytes is sufficient).
-
+- Flash encryption does not prevent an attacker from understanding the high-level layout of the flash. This is because the same AES key is used for every pair of adjacent 16 byte AES blocks. When these adjacent 16 byte blocks contain identical content (such as empty or padding areas), these blocks will encrypt to produce matching pairs of encrypted blocks. This may allow an attacker to make high-level comparisons between encrypted devices (i.e. to tell if two devices are probably running the same firmware version).
+- For the same reason, an attacker can always tell when a pair of adjacent 16 byte blocks (32 byte aligned) contain two identical 16 byte sequences. Keep this in mind if storing sensitive data on the flash, design your flash storage so this doesn't happen (using a counter byte or some other non-identical value every 16 bytes is sufficient). :ref:`NVS Encryption <nvs_encryption>` deals with this and is suitable for many uses.
 - Flash encryption alone may not prevent an attacker from modifying the firmware of the device. To prevent unauthorised firmware from running on the device, use flash encryption in combination with :doc:`Secure Boot <secure-boot>`.
 
 .. _flash-encryption-and-secure-boot:
@@ -326,8 +333,8 @@ A third option with more flexibility: the app can call :func:`esp_flash_write_pr
 
 .. _flash-encryption-advanced-features:
 
-Flash Encryption Advanced Features
-----------------------------------
+Advanced Features
+-----------------
 
 The following information is useful for advanced use of flash encryption:
 
@@ -393,6 +400,12 @@ It is possible to write these efuse manually, and write protect it before first 
 
 It is strongly recommended to never write protect ``FLASH_CRYPT_CONFIG`` when it the value is zero. If this efuse is set to zero, no bits in the flash encryption key are tweaked and the flash encryption algorithm is equivalent to AES ECB mode.
 
+JTAG Debugging
+^^^^^^^^^^^^^^
+
+By default, when Flash Encryption is enabled then JTAG debugging is disabled via eFuse. The bootloader does this on first boot, at the same time it enables flash encryption.
+
+See :ref:`jtag-debugging-security-features` for more information about using JTAG Debugging with Flash Encryption.
 
 Technical Details
 -----------------

@@ -61,9 +61,9 @@ static void initialize_console(void)
     setvbuf(stdout, NULL, _IONBF, 0);
 
     /* Minicom, screen, idf_monitor send CR when ENTER key is pressed */
-    esp_vfs_dev_uart_set_rx_line_endings(ESP_LINE_ENDINGS_CR);
+    esp_vfs_dev_uart_port_set_rx_line_endings(CONFIG_CONSOLE_UART_NUM, ESP_LINE_ENDINGS_CR);
     /* Move the caret to the beginning of the next line on '\n' */
-    esp_vfs_dev_uart_set_tx_line_endings(ESP_LINE_ENDINGS_CRLF);
+    esp_vfs_dev_uart_port_set_tx_line_endings(CONFIG_CONSOLE_UART_NUM, ESP_LINE_ENDINGS_CRLF);
 
     /* Install UART driver for interrupt-driven reads and writes */
     ESP_ERROR_CHECK( uart_driver_install(CONFIG_CONSOLE_UART_NUM,
@@ -128,6 +128,9 @@ esp_err_t bluetooth_init(void)
         ESP_LOGE(TAG, "%s failed to enable bluetooth\n", __func__);
         return ret;
     }
+
+    esp_log_level_set("*", ESP_LOG_ERROR);
+    esp_log_level_set("ble_mesh_prov_console", ESP_LOG_INFO);
 
     return ret;
 }
