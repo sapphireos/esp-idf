@@ -12,7 +12,12 @@ pushd examples/build_system/cmake/idf_as_lib
 ./build-esp32.sh
 popd
 
-mkdir ../esp32/esp-idf
-cp -r examples/build_system/cmake/idf_as_lib ../esp32/esp-idf
-cp -r components ../esp32/esp-idf
-cp esp32_chromatron.ld ../esp32/esp-idf/idf_as_lib/build
+# mkdir ../esp32/esp-idf
+# cp -r examples/build_system/cmake/idf_as_lib ../esp32/esp-idf
+# cp -r components ../esp32/esp-idf
+# cp esp32_chromatron.ld ../esp32/esp-idf/idf_as_lib/build
+
+mkdir ../esp32/esp-idf-single
+cp -r examples/build_system/cmake/idf_as_lib ../esp32/esp-idf-single
+cp -r components ../esp32/esp-idf-single
+cp esp32_chromatron.ld ../esp32/esp-idf-single/idf_as_lib/build
