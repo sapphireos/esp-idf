@@ -23,6 +23,8 @@
 
 /* Enable all Espressif-only options */
 
+#define ARP_TABLE_SIZE 64
+
 /*
    -----------------------------------------------
    ---------- Platform specific locking ----------
