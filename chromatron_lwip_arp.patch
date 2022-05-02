@@ -1,0 +1,13 @@
+diff --git a/components/lwip/port/esp32/include/lwipopts.h b/components/lwip/port/esp32/include/lwipopts.h
+index 47215e99da..481c96b709 100644
+--- a/components/lwip/port/esp32/include/lwipopts.h
++++ b/components/lwip/port/esp32/include/lwipopts.h
+@@ -23,6 +23,8 @@
+ 
+ /* Enable all Espressif-only options */
+ 
++#define ARP_TABLE_SIZE 64
++
+ /*
+    -----------------------------------------------
+    ---------- Platform specific locking ----------
