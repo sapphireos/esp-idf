@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# the ESP-IDF needs to be checked out in chromatron/src/hal
+# don't forget to setup submodules!
+# git submodule init
+# git submodule update
+
+./install.sh
+. ./export.sh
+
+pushd examples/custom_bootloader/bootloader_override
+./build-esp32.sh
+popd
+
+# mkdir ../esp32/esp-idf
+# # cp -r examples/build_system/cmake/idf_as_lib ../esp32/esp-idf
+# cp -r chromatron_lib ../esp32/esp-idf
+# mv ../esp32/esp-idf/chromatron_lib ../esp32/esp-idf/idf_as_lib
+# cp -r components ../esp32/esp-idf
+# # cp esp32_chromatron.ld ../esp32/esp-idf/idf_as_lib/build
+# cp esp32_chromatron.ld ../esp32/esp-idf/idf_as_lib/build

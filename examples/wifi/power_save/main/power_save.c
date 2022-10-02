@@ -19,10 +19,11 @@
 #include "esp_event.h"
 #include "esp_pm.h"
 #include "nvs_flash.h"
+#include "driver/gpio.h"
 
 /*set the ssid and password via "idf.py menuconfig"*/
-#define DEFAULT_SSID CONFIG_EXAMPLE_WIFI_SSID
-#define DEFAULT_PWD CONFIG_EXAMPLE_WIFI_PASSWORD
+#define DEFAULT_SSID "DeusExMachina"
+#define DEFAULT_PWD "heretherebedragons"
 
 #define DEFAULT_LISTEN_INTERVAL CONFIG_EXAMPLE_WIFI_LISTEN_INTERVAL
 
@@ -78,7 +79,8 @@ static void wifi_power_save(void)
     ESP_ERROR_CHECK(esp_wifi_start());
 
     ESP_LOGI(TAG, "esp_wifi_set_ps().");
-    esp_wifi_set_ps(DEFAULT_PS_MODE);
+    esp_wifi_set_ps(WIFI_PS_MIN_MODEM);
+    // esp_wifi_set_ps(WIFI_PS_NONE);
 }
 
 void app_main(void)
@@ -90,6 +92,7 @@ void app_main(void)
         ret = nvs_flash_init();
     }
     ESP_ERROR_CHECK( ret );
+
 
 #if CONFIG_PM_ENABLE
     // Configure dynamic frequency scaling:
@@ -107,7 +110,7 @@ void app_main(void)
             .max_freq_mhz = CONFIG_EXAMPLE_MAX_CPU_FREQ_MHZ,
             .min_freq_mhz = CONFIG_EXAMPLE_MIN_CPU_FREQ_MHZ,
 #if CONFIG_FREERTOS_USE_TICKLESS_IDLE
-            .light_sleep_enable = true
+            .light_sleep_enable = false
 #endif
     };
     ESP_ERROR_CHECK( esp_pm_configure(&pm_config) );
