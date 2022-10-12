@@ -21,9 +21,12 @@
 #include "nvs_flash.h"
 #include "driver/gpio.h"
 
-/*set the ssid and password via "idf.py menuconfig"*/
-#define DEFAULT_SSID "DeusExMachina"
-#define DEFAULT_PWD "heretherebedragons"
+
+#include "wifi_config.txt"
+// wifi settings defined in wifi_config.txt
+//#define DEFAULT_SSID 
+//#define DEFAULT_PWD 
+
 
 #define DEFAULT_LISTEN_INTERVAL CONFIG_EXAMPLE_WIFI_LISTEN_INTERVAL
 
@@ -79,6 +82,7 @@ static void wifi_power_save(void)
     ESP_ERROR_CHECK(esp_wifi_start());
 
     ESP_LOGI(TAG, "esp_wifi_set_ps().");
+    
     esp_wifi_set_ps(WIFI_PS_MIN_MODEM);
     // esp_wifi_set_ps(WIFI_PS_NONE);
 }
@@ -107,14 +111,29 @@ void app_main(void)
 #elif CONFIG_IDF_TARGET_ESP32S3
     esp_pm_config_esp32s3_t pm_config = {
 #endif
-            .max_freq_mhz = CONFIG_EXAMPLE_MAX_CPU_FREQ_MHZ,
-            .min_freq_mhz = CONFIG_EXAMPLE_MIN_CPU_FREQ_MHZ,
+            .max_freq_mhz = 240,
+            .min_freq_mhz = 80,
 #if CONFIG_FREERTOS_USE_TICKLESS_IDLE
-            .light_sleep_enable = false
+            .light_sleep_enable = true
 #endif
     };
     ESP_ERROR_CHECK( esp_pm_configure(&pm_config) );
 #endif // CONFIG_PM_ENABLE
 
     wifi_power_save();
+
+
+    while(1){
+
+        // vTaskDelay(pdMS_TO_TICKS(4));
+
+        // vTaskDelay(pdMS_TO_TICKS(100)); // ok
+        // vTaskDelay(pdMS_TO_TICKS(90)); // ok
+        // vTaskDelay(pdMS_TO_TICKS(80)); // ok
+        // vTaskDelay(pdMS_TO_TICKS(70)); // ok
+        // vTaskDelay(pdMS_TO_TICKS(60)); // mostly ok, but showing issues
+        // vTaskDelay(pdMS_TO_TICKS(50)); // ok?
+        // vTaskDelay(pdMS_TO_TICKS(40)); // definitely messed up 
+        vTaskDelay(pdMS_TO_TICKS(20));
+    }
 }
