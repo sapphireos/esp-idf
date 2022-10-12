@@ -82,7 +82,7 @@ static void wifi_power_save(void)
     ESP_ERROR_CHECK(esp_wifi_start());
 
     ESP_LOGI(TAG, "esp_wifi_set_ps().");
-    
+
     esp_wifi_set_ps(WIFI_PS_MIN_MODEM);
     // esp_wifi_set_ps(WIFI_PS_NONE);
 }
@@ -111,10 +111,10 @@ void app_main(void)
 #elif CONFIG_IDF_TARGET_ESP32S3
     esp_pm_config_esp32s3_t pm_config = {
 #endif
-            .max_freq_mhz = 240,
+            .max_freq_mhz = 80,
             .min_freq_mhz = 80,
 #if CONFIG_FREERTOS_USE_TICKLESS_IDLE
-            .light_sleep_enable = true
+            .light_sleep_enable = false
 #endif
     };
     ESP_ERROR_CHECK( esp_pm_configure(&pm_config) );
@@ -125,15 +125,31 @@ void app_main(void)
 
     while(1){
 
-        // vTaskDelay(pdMS_TO_TICKS(4));
-
-        // vTaskDelay(pdMS_TO_TICKS(100)); // ok
-        // vTaskDelay(pdMS_TO_TICKS(90)); // ok
-        // vTaskDelay(pdMS_TO_TICKS(80)); // ok
-        // vTaskDelay(pdMS_TO_TICKS(70)); // ok
-        // vTaskDelay(pdMS_TO_TICKS(60)); // mostly ok, but showing issues
-        // vTaskDelay(pdMS_TO_TICKS(50)); // ok?
-        // vTaskDelay(pdMS_TO_TICKS(40)); // definitely messed up 
-        vTaskDelay(pdMS_TO_TICKS(20));
+        vTaskDelay(pdMS_TO_TICKS( 100 ));
     }
 }
+
+
+/*
+
+When is modem sleep broken:
+
+All configurations have modem sleep enabled and set to min.
+
+RTOS ticks 1000 Hz
+dual core mode
+
+           auto    min    max    task
+           light   CPU    CPU    delay
+broken? |  sleep | freq | freq | ms    |
+
+no      | true   | 80   | 80   |  20   |
+yes     | true   | 80   | 240  |  20   |
+yes     | true   | 80   | 240  |  100  |
+no      | true   | 80   | 80   |  100  |
+yes     | false  | 80   | 240  |  100  |
+no      | false  | 80   | 80   |  100  |
+
+
+
+*/
