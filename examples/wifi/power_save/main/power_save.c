@@ -111,10 +111,10 @@ void app_main(void)
 #elif CONFIG_IDF_TARGET_ESP32S3
     esp_pm_config_esp32s3_t pm_config = {
 #endif
-            .max_freq_mhz = 80,
+            .max_freq_mhz = 240,
             .min_freq_mhz = 80,
 #if CONFIG_FREERTOS_USE_TICKLESS_IDLE
-            .light_sleep_enable = false
+            .light_sleep_enable = true
 #endif
     };
     ESP_ERROR_CHECK( esp_pm_configure(&pm_config) );
@@ -125,7 +125,7 @@ void app_main(void)
 
     while(1){
 
-        vTaskDelay(pdMS_TO_TICKS( 100 ));
+        vTaskDelay(pdMS_TO_TICKS( 20 ));
     }
 }
 
